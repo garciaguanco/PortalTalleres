@@ -82,14 +82,14 @@
         </div>
     </div>
 
-    <!-- PANTALLA PRINCIPAL DE LA APLICACI�N -->
+    <!-- PANTALLA PRINCIPAL DE LA APLICACION -->
     <div id="app-view" class="hidden flex-col min-h-screen">
 
         <!-- Header Navigation -->
         <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <button id="btn-hamburger" class="p-2.5 hover:bg-slate-800 active:bg-slate-700 rounded-lg transition" onclick="toggleMenu()" aria-label="Abrir Men�">
+                    <button id="btn-hamburger" class="p-2.5 hover:bg-slate-800 active:bg-slate-700 rounded-lg transition" onclick="toggleMenu()" aria-label="Abrir menu">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                     <h1 class="text-lg md:text-xl font-bold tracking-wide flex items-center gap-2">
@@ -112,20 +112,20 @@
             </div>
         </header>
 
-        <!-- Drawer / Men� Hamburguesa Sidebar -->
+        <!-- Drawer / Menu Hamburguesa Sidebar -->
         <div id="menu-overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity" onclick="toggleMenu()"></div>
         <aside id="sidebar" class="fixed top-0 left-0 w-72 h-full bg-slate-900 text-slate-200 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
             <div class="p-5">
                 <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
                     <span class="font-bold text-white text-lg flex items-center gap-2">
-                        <i data-lucide="layers" class="text-emerald-400"></i> Navegaci&oacute;n
+                        <i data-lucide="layers" class="text-emerald-400"></i> Navegacion
                     </span>
                     <button onclick="toggleMenu()" class="p-2 hover:bg-slate-800 rounded-lg">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                 </div>
                 <nav id="sidebar-nav" class="space-y-3">
-                    <!-- Opciones din�micas -->
+                    <!-- Opciones dinamicas -->
                 </nav>
             </div>
             <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
@@ -156,13 +156,13 @@
                         </h2>
                         <p class="text-xs md:text-sm text-slate-500">Filas por Taller y Columnas por Etapas (Agendado resaltado en Verde)</p>
                     </div>
-                    <!-- Bot�n Exportar Excel Matriz (Disponible para todos) -->
+                    <!-- Boton Exportar Excel Matriz (Disponible para todos) -->
                     <button onclick="exportMatrixToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 shadow-xs transition w-full sm:w-auto justify-center">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
                     </button>
                 </div>
 
-                <!-- Vista M�vil (Tarjetas apiladas) -->
+                <!-- Vista Movil (Tarjetas apiladas) -->
                 <div id="matrix-mobile" class="block lg:hidden p-3 space-y-4"></div>
 
                 <!-- Vista Escritorio (Tabla tradicional) -->
@@ -172,7 +172,7 @@
                             <tr class="bg-slate-100 text-xs uppercase text-slate-600 font-semibold border-b border-slate-200">
                                 <th class="p-4 w-1/5">Taller</th>
                                 <th class="p-4 w-1/5 bg-sky-50/50 border-l border-slate-200">Contacto Inicial</th>
-                                <th class="p-4 w-1/5 bg-blue-50/50 border-l border-slate-200">En coordinaci&oacute;n</th>
+                                <th class="p-4 w-1/5 bg-blue-50/50 border-l border-slate-200">En coordinacion</th>
                                 <th class="p-4 w-1/5 bg-emerald-50/80 border-l border-2 border-emerald-500 text-emerald-900 font-bold">Agendado</th>
                                 <th class="p-4 w-1/5 bg-orange-50/50 border-l border-slate-200">Confirmados - cierre</th>
                             </tr>
@@ -189,10 +189,10 @@
                         <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
                             <i data-lucide="calendar" class="text-blue-600 w-5 h-5"></i> Calendario Mensual
                         </h2>
-                        <p class="text-xs md:text-sm text-slate-500">Distribuci&oacute;n de talleres por mes y d&iacute;a</p>
+                        <p class="text-xs md:text-sm text-slate-500">Distribucion de talleres por mes y dia</p>
                     </div>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                        <!-- Bot�n Exportar Excel Calendario (Disponible para todos) -->
+                        <!-- Boton Exportar Excel Calendario (Disponible para todos) -->
                         <button onclick="exportCalendarToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 justify-center shadow-xs transition">
                             <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
                         </button>
@@ -220,7 +220,7 @@
                     </div>
                 </div>
 
-                <!-- Cabecera D�as -->
+                <!-- Cabecera Dias -->
                 <div class="grid grid-cols-7 gap-1 text-center font-semibold text-[11px] sm:text-xs text-slate-500 uppercase">
                     <div>Lun</div><div>Mar</div><div>Mi&eacute;</div><div>Jue</div><div>Vie</div><div>S&aacute;b</div><div>Dom</div>
                 </div>
@@ -229,22 +229,22 @@
                 <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
             </section>
 
-            <!-- VISTA 3: ADMINISTRACI�N Y SUPERVISI�N -->
+            <!-- VISTA 3: ADMINISTRACION Y SUPERVISION -->
             <section id="view-admin" class="bg-white rounded-xl shadow-xs border border-slate-200 p-4 sm:p-6 hidden space-y-6">
                 
-                <!-- Encabezado y Navegaci�n Interna de Administraci�n -->
+                <!-- Encabezado y Navegacion Interna de Administracion -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
                     <div>
                         <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <i data-lucide="shield-check" class="text-amber-600 w-5 h-5"></i> Administrac&oacute;n y M&eacute;tricas Corporativas
+                            <i data-lucide="shield-check" class="text-amber-600 w-5 h-5"></i> Administracion y Metricas Corporativas
                         </h2>
-                        <p class="text-xs md:text-sm text-slate-500">Visualiza res&uacute;menes globales, gr&aacute;ficas de progreso o desgloses por asesor</p>
+                        <p class="text-xs md:text-sm text-slate-500">Visualiza resumenes globales, graficas de progreso o desgloses por asesor</p>
                     </div>
 
-                    <!-- Botones de Pesta�as Internas -->
+                    <!-- Botones de Pestañas Internas -->
                     <div class="flex bg-slate-100 p-1 rounded-xl gap-1 w-full md:w-auto text-xs font-semibold">
                         <button id="tab-btn-global" onclick="switchAdminTab('global')" class="flex-1 md:flex-none px-4 py-2 rounded-lg bg-white text-slate-800 shadow-xs transition flex items-center justify-center gap-1.5">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Totales y Gr&aacute;ficas
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Totales y Graficas
                         </button>
                         <button id="tab-btn-asesores" onclick="switchAdminTab('asesores')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
                             <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Por Asesor
@@ -252,7 +252,7 @@
                     </div>
                 </div>
 
-                <!-- PESTA�A 1: TOTALES GENERALES Y GR�FICAS -->
+                <!-- PESTAñA 1: TOTALES GENERALES Y GRaFICAS -->
                 <div id="admin-tab-global" class="space-y-6">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800 text-sm">Resumen Consolidado de Etapas</h3>
@@ -273,7 +273,7 @@
                             <p class="text-xl font-bold text-sky-900" id="macro-contacto">0</p>
                         </div>
                         <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl space-y-1">
-                            <p class="text-[11px] text-blue-700 font-bold uppercase">En Coordinaci&oacute;n</p>
+                            <p class="text-[11px] text-blue-700 font-bold uppercase">En Coordinacion</p>
                             <p class="text-xl font-bold text-blue-900" id="macro-coordinacion">0</p>
                         </div>
                         <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl space-y-1">
@@ -286,18 +286,18 @@
                         </div>
                     </div>
 
-                    <!-- Gr�ficas de Progreso Visual por Etapa -->
+                    <!-- Graficas de Progreso Visual por Etapa -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4">
                         <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                            <i data-lucide="bar-chart-2" class="text-emerald-600 w-4 h-4"></i> Distribuci&oacute;n Porcentual por Etapa
+                            <i data-lucide="bar-chart-2" class="text-emerald-600 w-4 h-4"></i> Distribucion Porcentual por Etapa
                         </h3>
                         <div class="space-y-3" id="charts-progress-container">
-                            <!-- Generado din�micamente -->
+                            <!-- Generado dinamicamente -->
                         </div>
                     </div>
                 </div>
 
-                <!-- PESTA�A 2: DETALLE POR ASESOR (BUSCADOR E HISTORIAL) -->
+                <!-- PESTAÑA 2: DETALLE POR ASESOR (BUSCADOR E HISTORIAL) -->
                 <div id="admin-tab-asesores" class="hidden space-y-6">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
@@ -319,7 +319,7 @@
                     <!-- KPIs por Asesor -->
                     <div id="admin-kpis" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-                    <!-- Tabla Hist�rica con Exportaci�n -->
+                    <!-- Tabla Historica con Exportacion -->
                     <div class="overflow-x-auto pt-2 space-y-3">
                         <div class="flex justify-between items-center">
                             <h3 class="font-bold text-slate-700 text-sm">Historial Completo por Asesor</h3>
@@ -364,15 +364,15 @@
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Taller</label>
                     <select id="event-taller" class="w-full border rounded-lg p-3 text-sm bg-white" required>
-                        <option value="Orientaci�n Laboral">Orientaci&oacute;n Laboral</option>
-                        <option value="Educaci�n Financiera">Educaci&oacute;n Financiera</option>
+                        <option value="Orientacion Laboral">Orientacion Laboral</option>
+                        <option value="Educacion Financiera">Educacion Financiera</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Etapa / Proceso</label>
                     <select id="event-etapa" class="w-full border rounded-lg p-3 text-sm bg-white" required>
                         <option value="contacto">Contacto Inicial</option>
-                        <option value="coordinacion">En coordinaci&oacute;n</option>
+                        <option value="coordinacion">En coordinacion</option>
                         <option value="agendado">Agendado (Verde)</option>
                         <option value="cierre">Confirmados - cierre</option>
                     </select>
@@ -388,7 +388,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Descripci&oacute;n / Notas</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Descripcion / Notas</label>
                     <input type="text" id="event-titulo" placeholder="Ej. Sesion 1 - Introduccion" class="w-full border rounded-lg p-3 text-sm" required>
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
@@ -400,6 +400,7 @@
     </div>
 
 
-    <script src="js/app.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
