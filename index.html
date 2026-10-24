@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal de Gestion de Talleres</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agendado: '#16a34a',
+                        coordinacion: '#2563eb',
+                        contacto: '#0284c7',
+                        cierre: '#ea580c'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-view" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-emerald-100 rounded-2xl text-emerald-600 mb-1">
+                    <i data-lucide="presentation" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">Portal de Talleres</h2>
+                <p class="text-xs sm:text-sm text-slate-500">Ingresa tus credenciales corporativas para continuar</p>
+            </div>
+
+            <!-- Alerta de error -->
+            <div id="login-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                <span>Usuario o contrase&ntilde;a incorrectos.</span>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Usuario</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </span>
+                        <input type="text" id="login-username" placeholder="Ej. sgarcia, asesor o jefe" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Contrase&ntilde;a</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
+                        </span>
+                        <input type="password" id="login-password" placeholder="��������" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Iniciar Sesion;n
+                </button>
+            </form>
+
+            <div class="border-t border-slate-100 pt-4 text-center">
+                <p class="text-xs text-slate-400 font-medium mb-2">Credenciales demo de acceso:</p>
+                <div class="flex flex-wrap justify-center gap-2 text-[11px] text-slate-600">
+                    <span class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-2.5 py-1 rounded-md"><b>Sebastian:</b> sgarcia / 123</span>
+                    <span class="bg-slate-100 px-2.5 py-1 rounded-md"><b>Asesor:</b> asesor / 123</span>
+                    <span class="bg-slate-100 px-2.5 py-1 rounded-md"><b>Jefe:</b> jefe / 123</span>
+                </div>
+            </div>
+            
+            <p class="text-[11px] text-slate-400 text-center pt-2 border-t border-slate-100">&copy; 2026 Tigo. Todos los derechos reservados.</p>
+        </div>
+    </div>
+
+    <!-- PANTALLA PRINCIPAL DE LA APLICACI�N -->
+    <div id="app-view" class="hidden flex-col min-h-screen">
+
+        <!-- Header Navigation -->
+        <header class="bg-slate-900 text-white shadow-md sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <button id="btn-hamburger" class="p-2.5 hover:bg-slate-800 active:bg-slate-700 rounded-lg transition" onclick="toggleMenu()" aria-label="Abrir Men�">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <h1 class="text-lg md:text-xl font-bold tracking-wide flex items-center gap-2">
+                        <i data-lucide="presentation" class="text-emerald-400 w-5 h-5 md:w-6 md:h-6"></i> 
+                        <span class="truncate">Portal Talleres</span>
+                    </h1>
+                </div>
+                
+                <!-- Info Usuario y Logout -->
+                <div class="flex items-center gap-3">
+                    <div class="flex flex-col text-right">
+                        <span id="user-display-greeting" class="text-xs font-bold text-emerald-400">Hola Sebastian!</span>
+                        <span id="user-display-role" class="text-[10px] text-slate-300 uppercase tracking-wider">Asesor Facilitador</span>
+                    </div>
+                    <button onclick="handleLogout()" title="Cerrar Sesion" class="p-2 hover:bg-slate-800 active:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition flex items-center gap-1.5 text-xs">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        <span class="hidden md:inline">Salir</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Drawer / Men� Hamburguesa Sidebar -->
+        <div id="menu-overlay" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity" onclick="toggleMenu()"></div>
+        <aside id="sidebar" class="fixed top-0 left-0 w-72 h-full bg-slate-900 text-slate-200 z-50 transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
+            <div class="p-5">
+                <div class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+                    <span class="font-bold text-white text-lg flex items-center gap-2">
+                        <i data-lucide="layers" class="text-emerald-400"></i> Navegaci&oacute;n
+                    </span>
+                    <button onclick="toggleMenu()" class="p-2 hover:bg-slate-800 rounded-lg">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <nav id="sidebar-nav" class="space-y-3">
+                    <!-- Opciones din�micas -->
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800 text-xs text-slate-400 text-center">
+                Portal Corporativo v4.1
+            </div>
+        </aside>
+
+        <!-- Main Content Body -->
+        <main class="max-w-7xl mx-auto p-3 sm:p-6 flex-1 w-full space-y-4 md:space-y-6">
+            
+            <!-- Banner de Bienvenida -->
+            <div id="role-banner" class="bg-emerald-50 border-l-4 border-emerald-500 p-3.5 sm:p-4 rounded-r-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
+                <div>
+                    <p class="font-bold text-emerald-900 text-sm sm:text-base" id="role-title">Sesion Activa</p>
+                    <p class="text-xs sm:text-sm text-emerald-700" id="role-desc">Gestion de talleres, fases y sincronizacion con calendarios.</p>
+                </div>
+                <button id="btn-new-event" onclick="openModal()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 shadow transition text-sm">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Nuevo Evento
+                </button>
+            </div>
+
+            <!-- VISTA 1: MATRIZ DE PROCESOS -->
+            <section id="view-matrix" class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+                <div class="p-4 md:p-5 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50/50">
+                    <div>
+                        <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="table" class="text-blue-600 w-5 h-5"></i> Panel de Procesos - Seguimiento
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-500">Filas por Taller y Columnas por Etapas (Agendado resaltado en Verde)</p>
+                    </div>
+                    <!-- Bot�n Exportar Excel Matriz (Disponible para todos) -->
+                    <button onclick="exportMatrixToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 shadow-xs transition w-full sm:w-auto justify-center">
+                        <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
+                    </button>
+                </div>
+
+                <!-- Vista M�vil (Tarjetas apiladas) -->
+                <div id="matrix-mobile" class="block lg:hidden p-3 space-y-4"></div>
+
+                <!-- Vista Escritorio (Tabla tradicional) -->
+                <div id="matrix-desktop" class="hidden lg:block overflow-x-auto smooth-scroll">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-100 text-xs uppercase text-slate-600 font-semibold border-b border-slate-200">
+                                <th class="p-4 w-1/5">Taller</th>
+                                <th class="p-4 w-1/5 bg-sky-50/50 border-l border-slate-200">Contacto Inicial</th>
+                                <th class="p-4 w-1/5 bg-blue-50/50 border-l border-slate-200">En coordinaci&oacute;n</th>
+                                <th class="p-4 w-1/5 bg-emerald-50/80 border-l border-2 border-emerald-500 text-emerald-900 font-bold">Agendado</th>
+                                <th class="p-4 w-1/5 bg-orange-50/50 border-l border-slate-200">Confirmados - cierre</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-tbody" class="divide-y divide-slate-200 text-sm"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VISTA 2: CALENDARIO INTEGRAL -->
+            <section id="view-calendar" class="bg-white rounded-xl shadow-xs border border-slate-200 p-3 sm:p-6 hidden space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+                    <div>
+                        <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="calendar" class="text-blue-600 w-5 h-5"></i> Calendario Mensual
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-500">Distribuci&oacute;n de talleres por mes y d&iacute;a</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                        <!-- Bot�n Exportar Excel Calendario (Disponible para todos) -->
+                        <button onclick="exportCalendarToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 justify-center shadow-xs transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
+                        </button>
+                        <div class="flex items-center gap-1.5 justify-between">
+                            <button onclick="changeMonth(-1)" class="p-2 border rounded-lg hover:bg-slate-100 active:bg-slate-200"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <div class="flex gap-1">
+                                <select id="calendar-month-select" onchange="updateCalendarMonth()" class="border rounded-lg px-2 py-1.5 text-xs bg-white font-medium">
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                                <select id="calendar-year-select" onchange="updateCalendarMonth()" class="border rounded-lg px-2 py-1.5 text-xs bg-white font-medium"></select>
+                            </div>
+                            <button onclick="changeMonth(1)" class="p-2 border rounded-lg hover:bg-slate-100 active:bg-slate-200"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cabecera D�as -->
+                <div class="grid grid-cols-7 gap-1 text-center font-semibold text-[11px] sm:text-xs text-slate-500 uppercase">
+                    <div>Lun</div><div>Mar</div><div>Mi&eacute;</div><div>Jue</div><div>Vie</div><div>S&aacute;b</div><div>Dom</div>
+                </div>
+
+                <!-- Grilla del Calendario -->
+                <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
+            </section>
+
+            <!-- VISTA 3: ADMINISTRACI�N Y SUPERVISI�N -->
+            <section id="view-admin" class="bg-white rounded-xl shadow-xs border border-slate-200 p-4 sm:p-6 hidden space-y-6">
+                
+                <!-- Encabezado y Navegaci�n Interna de Administraci�n -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
+                    <div>
+                        <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="shield-check" class="text-amber-600 w-5 h-5"></i> Administrac&oacute;n y M&eacute;tricas Corporativas
+                        </h2>
+                        <p class="text-xs md:text-sm text-slate-500">Visualiza res&uacute;menes globales, gr&aacute;ficas de progreso o desgloses por asesor</p>
+                    </div>
+
+                    <!-- Botones de Pesta�as Internas -->
+                    <div class="flex bg-slate-100 p-1 rounded-xl gap-1 w-full md:w-auto text-xs font-semibold">
+                        <button id="tab-btn-global" onclick="switchAdminTab('global')" class="flex-1 md:flex-none px-4 py-2 rounded-lg bg-white text-slate-800 shadow-xs transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Totales y Gr&aacute;ficas
+                        </button>
+                        <button id="tab-btn-asesores" onclick="switchAdminTab('asesores')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="users" class="w-4 h-4 text-blue-600"></i> Por Asesor
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PESTA�A 1: TOTALES GENERALES Y GR�FICAS -->
+                <div id="admin-tab-global" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-sm">Resumen Consolidado de Etapas</h3>
+                        <button onclick="exportAdminMacroToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
+                        </button>
+                    </div>
+
+                    <!-- Cards de Totales Macros -->
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <div class="bg-slate-900 text-white p-4 rounded-xl space-y-1 shadow-xs col-span-2 md:col-span-1">
+                            <p class="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Total Talleres</p>
+                            <p class="text-2xl font-extrabold text-emerald-400" id="macro-total">0</p>
+                            <p class="text-[10px] text-slate-400">Registrados globalmente</p>
+                        </div>
+                        <div class="bg-sky-50 border border-sky-100 p-3.5 rounded-xl space-y-1">
+                            <p class="text-[11px] text-sky-700 font-bold uppercase">Contacto Inicial</p>
+                            <p class="text-xl font-bold text-sky-900" id="macro-contacto">0</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-100 p-3.5 rounded-xl space-y-1">
+                            <p class="text-[11px] text-blue-700 font-bold uppercase">En Coordinaci&oacute;n</p>
+                            <p class="text-xl font-bold text-blue-900" id="macro-coordinacion">0</p>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl space-y-1">
+                            <p class="text-[11px] text-emerald-800 font-bold uppercase">Agendados</p>
+                            <p class="text-xl font-bold text-emerald-900" id="macro-agendado">0</p>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-100 p-3.5 rounded-xl space-y-1">
+                            <p class="text-[11px] text-orange-700 font-bold uppercase">Cierre / Confirmados</p>
+                            <p class="text-xl font-bold text-orange-900" id="macro-cierre">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Gr�ficas de Progreso Visual por Etapa -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i data-lucide="bar-chart-2" class="text-emerald-600 w-4 h-4"></i> Distribuci&oacute;n Porcentual por Etapa
+                        </h3>
+                        <div class="space-y-3" id="charts-progress-container">
+                            <!-- Generado din�micamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PESTA�A 2: DETALLE POR ASESOR (BUSCADOR E HISTORIAL) -->
+                <div id="admin-tab-asesores" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                            <i data-lucide="filter" class="w-4 h-4 text-emerald-600"></i> Filtros de B&uacute;squeda
+                        </span>
+                        <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-48">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
+                                    <i data-lucide="search" class="w-4 h-4"></i>
+                                </span>
+                                <input type="text" id="admin-search-input" oninput="renderAdminDashboard()" placeholder="Buscar asesor..." class="w-full border rounded-lg py-2 pl-8 pr-3 text-xs bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <select id="admin-filter-select" onchange="renderAdminDashboard()" class="w-full sm:w-48 border rounded-lg py-2 px-3 text-xs bg-white font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="ALL">-- Todos los Asesores --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- KPIs por Asesor -->
+                    <div id="admin-kpis" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+                    <!-- Tabla Hist�rica con Exportaci�n -->
+                    <div class="overflow-x-auto pt-2 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-slate-700 text-sm">Historial Completo por Asesor</h3>
+                            <button onclick="exportAdminHistoryToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition">
+                                <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
+                            </button>
+                        </div>
+                        <table class="w-full text-left border-collapse text-xs min-w-[700px]">
+                            <thead>
+                                <tr class="bg-slate-100 uppercase text-slate-600 border-b">
+                                    <th class="p-3">Asesor / Autor</th>
+                                    <th class="p-3">Taller</th>
+                                    <th class="p-3">Etapa Actual</th>
+                                    <th class="p-3">T&iacute;tulo / Notas</th>
+                                    <th class="p-3">Fecha y Hora</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-history-tbody" class="divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- FOOTER CORPORATIVO -->
+        <footer class="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800 mt-auto">
+            <p>&copy; 2026 Tigo. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Modal para Agregar / Editar Eventos -->
+    <div id="event-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 id="modal-title" class="font-bold text-base md:text-lg text-slate-800">Nuevo Evento de Taller</h3>
+                <button onclick="closeModal()" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="event-form" onsubmit="saveEvent(event)" class="space-y-4">
+                <input type="hidden" id="event-id">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Taller</label>
+                    <select id="event-taller" class="w-full border rounded-lg p-3 text-sm bg-white" required>
+                        <option value="Orientaci�n Laboral">Orientaci&oacute;n Laboral</option>
+                        <option value="Educaci�n Financiera">Educaci&oacute;n Financiera</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Etapa / Proceso</label>
+                    <select id="event-etapa" class="w-full border rounded-lg p-3 text-sm bg-white" required>
+                        <option value="contacto">Contacto Inicial</option>
+                        <option value="coordinacion">En coordinaci&oacute;n</option>
+                        <option value="agendado">Agendado (Verde)</option>
+                        <option value="cierre">Confirmados - cierre</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Fecha</label>
+                        <input type="date" id="event-fecha" class="w-full border rounded-lg p-3 text-sm bg-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Hora</label>
+                        <input type="time" id="event-hora" class="w-full border rounded-lg p-3 text-sm bg-white" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Descripci&oacute;n / Notas</label>
+                    <input type="text" id="event-titulo" placeholder="Ej. Sesion 1 - Introduccion" class="w-full border rounded-lg p-3 text-sm" required>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal()" class="w-1/2 sm:w-auto px-4 py-2.5 border rounded-lg text-sm text-slate-600 hover:bg-slate-100">Cancelar</button>
+                    <button type="submit" class="w-1/2 sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-sm font-medium">Guardar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="js/app.js"></script>
+</body>
+</html>
