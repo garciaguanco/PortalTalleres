@@ -40,7 +40,7 @@
             <!-- Alerta de error -->
             <div id="login-error" class="hidden bg-rose-50 border border-rose-200 text-rose-700 text-xs p-3 rounded-lg flex items-center gap-2">
                 <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
-                <span>Usuario o contrase&ntilde;a incorrectos.</span>
+                <span>Usuario o contraseña incorrectos.</span>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -55,17 +55,17 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Contrase&ntilde;a</label>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Contraseña</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <i data-lucide="lock" class="w-4 h-4"></i>
                         </span>
-                        <input type="password" id="login-password" placeholder="��������" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" required>
+                        <input type="password" id="login-password" placeholder="••••••••" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" required>
                     </div>
                 </div>
 
                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
-                    <i data-lucide="log-in" class="w-4 h-4"></i> Iniciar Sesion;n
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Iniciar Sesión
                 </button>
             </form>
 
@@ -156,16 +156,16 @@
                         </h2>
                         <p class="text-xs md:text-sm text-slate-500">Filas por Taller y Columnas por Etapas (Agendado resaltado en Verde)</p>
                     </div>
-                    <!-- Boton Exportar Excel Matriz (Disponible para todos) -->
+                    <!-- Boton Exportar Excel Matriz -->
                     <button onclick="exportMatrixToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 shadow-xs transition w-full sm:w-auto justify-center">
                         <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
                     </button>
                 </div>
 
-                <!-- Vista Movil (Tarjetas apiladas) -->
+                <!-- Vista Movil -->
                 <div id="matrix-mobile" class="block lg:hidden p-3 space-y-4"></div>
 
-                <!-- Vista Escritorio (Tabla tradicional) -->
+                <!-- Vista Escritorio -->
                 <div id="matrix-desktop" class="hidden lg:block overflow-x-auto smooth-scroll">
                     <table class="w-full text-left border-collapse min-w-[900px]">
                         <thead>
@@ -192,12 +192,11 @@
                         <p class="text-xs md:text-sm text-slate-500">Distribucion de talleres por mes y dia</p>
                     </div>
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                        <!-- Boton Exportar Excel Calendario (Disponible para todos) -->
                         <button onclick="exportCalendarToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center gap-2 justify-center shadow-xs transition">
                             <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
                         </button>
                         <div class="flex items-center gap-1.5 justify-between">
-                            <button onclick="changeMonth(-1)" class="p-2 border rounded-lg hover:bg-slate-100 active:bg-slate-200"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <button onclick="changeMonth(-1)" class="p-2 border rounded-lg hover:bg-slate-100"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                             <div class="flex gap-1">
                                 <select id="calendar-month-select" onchange="updateCalendarMonth()" class="border rounded-lg px-2 py-1.5 text-xs bg-white font-medium">
                                     <option value="0">Enero</option>
@@ -215,24 +214,20 @@
                                 </select>
                                 <select id="calendar-year-select" onchange="updateCalendarMonth()" class="border rounded-lg px-2 py-1.5 text-xs bg-white font-medium"></select>
                             </div>
-                            <button onclick="changeMonth(1)" class="p-2 border rounded-lg hover:bg-slate-100 active:bg-slate-200"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                            <button onclick="changeMonth(1)" class="p-2 border rounded-lg hover:bg-slate-100"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Cabecera Dias -->
                 <div class="grid grid-cols-7 gap-1 text-center font-semibold text-[11px] sm:text-xs text-slate-500 uppercase">
                     <div>Lun</div><div>Mar</div><div>Mi&eacute;</div><div>Jue</div><div>Vie</div><div>S&aacute;b</div><div>Dom</div>
                 </div>
 
-                <!-- Grilla del Calendario -->
                 <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
             </section>
 
             <!-- VISTA 3: ADMINISTRACION Y SUPERVISION -->
             <section id="view-admin" class="bg-white rounded-xl shadow-xs border border-slate-200 p-4 sm:p-6 hidden space-y-6">
-                
-                <!-- Encabezado y Navegacion Interna de Administracion -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
                     <div>
                         <h2 class="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -241,9 +236,8 @@
                         <p class="text-xs md:text-sm text-slate-500">Visualiza resumenes globales, graficas de progreso o desgloses por asesor</p>
                     </div>
 
-                    <!-- Botones de Pestañas Internas -->
                     <div class="flex bg-slate-100 p-1 rounded-xl gap-1 w-full md:w-auto text-xs font-semibold">
-                        <button id="tab-btn-global" onclick="switchAdminTab('global')" class="flex-1 md:flex-none px-4 py-2 rounded-lg bg-white text-slate-800 shadow-xs transition flex items-center justify-center gap-1.5">
+                        <button id="tab-btn-global" onclick="switchAdminTab('global')" class="flex-1 md:flex-none px-4 py-2 rounded-lg bg-white text-slate-800 shadow-xs transition flex items-center justify-center gap-1.5 font-bold">
                             <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i> Totales y Graficas
                         </button>
                         <button id="tab-btn-asesores" onclick="switchAdminTab('asesores')" class="flex-1 md:flex-none px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1.5">
@@ -252,7 +246,6 @@
                     </div>
                 </div>
 
-                <!-- PESTAñA 1: TOTALES GENERALES Y GRaFICAS -->
                 <div id="admin-tab-global" class="space-y-6">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-slate-800 text-sm">Resumen Consolidado de Etapas</h3>
@@ -261,12 +254,10 @@
                         </button>
                     </div>
 
-                    <!-- Cards de Totales Macros -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                         <div class="bg-slate-900 text-white p-4 rounded-xl space-y-1 shadow-xs col-span-2 md:col-span-1">
                             <p class="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Total Talleres</p>
                             <p class="text-2xl font-extrabold text-emerald-400" id="macro-total">0</p>
-                            <p class="text-[10px] text-slate-400">Registrados globalmente</p>
                         </div>
                         <div class="bg-sky-50 border border-sky-100 p-3.5 rounded-xl space-y-1">
                             <p class="text-[11px] text-sky-700 font-bold uppercase">Contacto Inicial</p>
@@ -286,44 +277,33 @@
                         </div>
                     </div>
 
-                    <!-- Graficas de Progreso Visual por Etapa -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4">
                         <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
                             <i data-lucide="bar-chart-2" class="text-emerald-600 w-4 h-4"></i> Distribucion Porcentual por Etapa
                         </h3>
-                        <div class="space-y-3" id="charts-progress-container">
-                            <!-- Generado dinamicamente -->
-                        </div>
+                        <div class="space-y-3" id="charts-progress-container"></div>
                     </div>
                 </div>
 
-                <!-- PESTAÑA 2: DETALLE POR ASESOR (BUSCADOR E HISTORIAL) -->
                 <div id="admin-tab-asesores" class="hidden space-y-6">
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1">
-                            <i data-lucide="filter" class="w-4 h-4 text-emerald-600"></i> Filtros de B&uacute;squeda
+                            <i data-lucide="filter" class="w-4 h-4 text-emerald-600"></i> Filtros de Búsqueda
                         </span>
                         <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-                            <div class="relative w-full sm:w-48">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
-                                    <i data-lucide="search" class="w-4 h-4"></i>
-                                </span>
-                                <input type="text" id="admin-search-input" oninput="renderAdminDashboard()" placeholder="Buscar asesor..." class="w-full border rounded-lg py-2 pl-8 pr-3 text-xs bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                            </div>
-                            <select id="admin-filter-select" onchange="renderAdminDashboard()" class="w-full sm:w-48 border rounded-lg py-2 px-3 text-xs bg-white font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <input type="text" id="admin-search-input" oninput="renderAdminDashboard()" placeholder="Buscar asesor..." class="w-full sm:w-48 border rounded-lg py-2 px-3 text-xs bg-white focus:outline-none">
+                            <select id="admin-filter-select" onchange="renderAdminDashboard()" class="w-full sm:w-48 border rounded-lg py-2 px-3 text-xs bg-white font-medium">
                                 <option value="ALL">-- Todos los Asesores --</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- KPIs por Asesor -->
                     <div id="admin-kpis" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-                    <!-- Tabla Historica con Exportacion -->
                     <div class="overflow-x-auto pt-2 space-y-3">
                         <div class="flex justify-between items-center">
                             <h3 class="font-bold text-slate-700 text-sm">Historial Completo por Asesor</h3>
-                            <button onclick="exportAdminHistoryToExcel()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition">
+                            <button onclick="exportAdminHistoryToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5">
                                 <i data-lucide="download" class="w-4 h-4"></i> Exportar a Excel
                             </button>
                         </div>
@@ -333,7 +313,7 @@
                                     <th class="p-3">Asesor / Autor</th>
                                     <th class="p-3">Taller</th>
                                     <th class="p-3">Etapa Actual</th>
-                                    <th class="p-3">T&iacute;tulo / Notas</th>
+                                    <th class="p-3">Título / Notas</th>
                                     <th class="p-3">Fecha y Hora</th>
                                 </tr>
                             </thead>
@@ -341,18 +321,15 @@
                         </table>
                     </div>
                 </div>
-
             </section>
-
         </main>
 
-        <!-- FOOTER CORPORATIVO -->
         <footer class="bg-slate-900 text-slate-400 text-xs py-4 text-center border-t border-slate-800 mt-auto">
             <p>&copy; 2026 Tigo. Todos los derechos reservados.</p>
         </footer>
     </div>
 
-    <!-- Modal para Agregar / Editar Eventos -->
+    <!-- Modal para Agregar / Editar / Evidenciar Eventos -->
     <div id="event-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
@@ -361,18 +338,21 @@
             </div>
             <form id="event-form" onsubmit="saveEvent(event)" class="space-y-4">
                 <input type="hidden" id="event-id">
+                <input type="hidden" id="event-lat">
+                <input type="hidden" id="event-lng">
+
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Taller</label>
                     <select id="event-taller" class="w-full border rounded-lg p-3 text-sm bg-white" required>
-                        <option value="Orientacion Laboral">Orientacion Laboral</option>
-                        <option value="Educacion Financiera">Educacion Financiera</option>
+                        <option value="Orientacion Laboral">Orientación Laboral</option>
+                        <option value="Educacion Financiera">Educación Financiera</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Etapa / Proceso</label>
                     <select id="event-etapa" class="w-full border rounded-lg p-3 text-sm bg-white" required>
                         <option value="contacto">Contacto Inicial</option>
-                        <option value="coordinacion">En coordinacion</option>
+                        <option value="coordinacion">En coordinación</option>
                         <option value="agendado">Agendado (Verde)</option>
                         <option value="cierre">Confirmados - cierre</option>
                     </select>
@@ -391,7 +371,31 @@
                     <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Descripcion / Notas</label>
                     <input type="text" id="event-titulo" placeholder="Ej. Sesion 1 - Introduccion" class="w-full border rounded-lg p-3 text-sm" required>
                 </div>
-                <div class="flex justify-end gap-2 pt-3">
+
+                <!-- SECCIÓN: EVIDENCIA Y GEOLOCALIZACIÓN -->
+                <div class="border-t pt-3 space-y-3">
+                    <p class="text-xs font-bold uppercase text-emerald-700 flex items-center gap-1.5">
+                        <i data-lucide="camera" class="w-4 h-4"></i> Evidencia en Terreno
+                    </p>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Foto del Taller Realizado</label>
+                        <input type="file" id="event-photo-input" accept="image/*" capture="environment" onchange="handlePhotoSelect(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        <div id="photo-preview-container" class="mt-2 hidden">
+                            <img id="photo-preview" class="h-28 w-full object-cover rounded-lg border border-slate-200">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" onclick="obtenerUbicacionGPS()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-2 border border-slate-300 transition">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i>
+                            <span id="gps-btn-text">Obtener Ubicación GPS Actual</span>
+                        </button>
+                        <p id="gps-status" class="text-[11px] text-slate-500 mt-1 text-center font-medium"></p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
                     <button type="button" onclick="closeModal()" class="w-1/2 sm:w-auto px-4 py-2.5 border rounded-lg text-sm text-slate-600 hover:bg-slate-100">Cancelar</button>
                     <button type="submit" class="w-1/2 sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-sm font-medium">Guardar Evento</button>
                 </div>
@@ -399,8 +403,7 @@
         </div>
     </div>
 
-
-   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

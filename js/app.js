@@ -341,15 +341,88 @@ END:VCALENDAR`;
     document.body.removeChild(link);
 }
 
+// --- NUEVAS FUNCIONES DE FOTO Y GEOLOCALIZACIÓN ---
+let tempPhotoBase64 = null;
+
+function handlePhotoSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempPhotoBase64 = e.target.result;
+            const preview = document.getElementById('photo-preview');
+            const container = document.getElementById('photo-preview-container');
+            preview.src = tempPhotoBase64;
+            container.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function obtenerUbicacionGPS() {
+    const statusText = document.getElementById('gps-status');
+    const btnText = document.getElementById('gps-btn-text');
+
+    if (!navigator.geolocation) {
+        statusText.innerText = "La geolocalización no es compatible con este navegador.";
+        return;
+    }
+
+    btnText.innerText = "Obteniendo coordenadas...";
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            document.getElementById('event-lat').value = lat;
+            document.getElementById('event-lng').value = lng;
+
+            btnText.innerText = "Ubicación Capturada ✓";
+            statusText.className = "text-[11px] text-emerald-600 font-semibold mt-1 text-center";
+            statusText.innerText = `Coordenadas: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        },
+        (error) => {
+            btnText.innerText = "Reintentar Obtener Ubicación";
+            statusText.className = "text-[11px] text-rose-600 font-semibold mt-1 text-center";
+            statusText.innerText = "No se pudo obtener la ubicación (permiso denegado o error de GPS).";
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+function getGoogleMapsUrl(lat, lng) {
+    if (!lat || !lng) return null;
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+}
+
+function notificarJefaturaOutlook(ev) {
+    const jefesEmails = "jefe@tigo.com";
+    const subject = encodeURIComponent(`NUEVO TALLER REALIZADO: ${ev.taller} - ${ev.titulo}`);
+    
+    let bodyText = `Hola Jefatura,\n\nSe ha registrado la realización del siguiente taller:\n\n`;
+    bodyText += `• Taller: ${ev.taller}\n`;
+    bodyText += `• Título/Notas: ${ev.titulo}\n`;
+    bodyText += `• Fecha y Hora: ${ev.fecha} ${ev.hora}\n`;
+    bodyText += `• Registrado por: ${ev.createdBy}\n`;
+
+    if (ev.lat && ev.lng) {
+        bodyText += `• Ubicación GPS: https://www.google.com/maps?q=${ev.lat},${ev.lng}\n`;
+    }
+
+    bodyText += `\nSaludos,\nPortal de Talleres Corporativo`;
+
+    const outlookUrl = `https://outlook.office.com/mail/deeplink/compose?to=${jefesEmails}&subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+    window.open(outlookUrl, '_blank');
+}
+
 function renderMatrix() {
-    // Obtener talleres predeterminados y agregar dinámicamente los que estén registrados en eventos
     const defaultTalleres = ['Orientacion Laboral', 'Educacion Financiera'];
     const talleresFromEvents = events.map(e => e.taller ? e.taller.trim() : '');
     const talleresUnicos = Array.from(new Set([...defaultTalleres, ...talleresFromEvents])).filter(Boolean);
     
     const etapas = ['contacto', 'coordinacion', 'agendado', 'cierre'];
 
-    // Función auxiliar para comparar nombres de talleres de forma flexible (ignorando acentos y mayúsculas)
     const matchTaller = (t1, t2) => {
         if (!t1 || !t2) return false;
         return t1.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === 
@@ -425,12 +498,16 @@ function createEventCard(ev, etapa) {
     const userFound = usersDatabase.find(u => u.username === ev.createdBy);
     const authorName = userFound ? userFound.name : 'Sistema';
 
+    let photoHtml = ev.foto ? `<img src="${ev.foto}" class="h-20 w-full object-cover rounded border border-black/10 mt-1">` : '';
+    let gpsHtml = (ev.lat && ev.lng) ? `<a href="${getGoogleMapsUrl(ev.lat, ev.lng)}" target="_blank" class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold transition hover:bg-red-200">📍 Ver en Mapa</a>` : '';
+
     card.className = `p-3 rounded-lg border text-xs relative space-y-2 ${bgCard}`;
     card.innerHTML = `
         <div>
             <p class="font-bold text-sm">${ev.titulo}</p>
             <p class="opacity-90 mt-0.5">📅 ${ev.fecha} - 🕒 ${ev.hora}</p>
-            <p class="text-[10px] opacity-75 mt-0.5">Por: <b>${authorName}</b></p>
+            <p class="text-[10px] opacity-75 mt-0.5">Por: <b>${authorName}</b> ${gpsHtml}</p>
+            ${photoHtml}
         </div>
         
         <div class="pt-1.5 border-t border-black/10 flex items-center justify-between flex-wrap gap-1.5">
@@ -438,12 +515,11 @@ function createEventCard(ev, etapa) {
                 <span class="text-[10px] opacity-75 mr-0.5">Agendar:</span>
                 <a href="${getGoogleCalendarUrl(ev)}" target="_blank" class="inline-flex items-center gap-0.5 bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded text-[10px] transition">📆 Google</a>
                 <a href="${getOutlookCalendarUrl(ev)}" target="_blank" class="inline-flex items-center gap-0.5 bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded text-[10px] transition">📆 Outlook</a>
-                <button onclick="downloadAppleCalendarIcs('${ev.id}')" class="inline-flex items-center gap-0.5 bg-white/20 hover:bg-white/30 px-1.5 py-0.5 rounded text-[10px] transition">📆 Apple</button>
             </div>
 
             <div class="flex gap-1 ml-auto">
-                <button onclick="editEvent('${ev.id}')" class="p-1 rounded hover:bg-black/15 active:bg-black/25 transition" title="Editar"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                <button onclick="deleteEvent('${ev.id}')" class="p-1 rounded hover:bg-black/15 active:bg-black/25 transition" title="Eliminar"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                <button onclick="editEvent('${ev.id}')" class="p-1 rounded hover:bg-black/15 transition" title="Editar"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button onclick="deleteEvent('${ev.id}')" class="p-1 rounded hover:bg-black/15 transition" title="Eliminar"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </div>
         </div>
     `;
@@ -628,10 +704,26 @@ function openModal(id = null) {
         document.getElementById('event-fecha').value = ev.fecha;
         document.getElementById('event-hora').value = ev.hora;
         document.getElementById('event-titulo').value = ev.titulo;
+        document.getElementById('event-lat').value = ev.lat || '';
+        document.getElementById('event-lng').value = ev.lng || '';
+        tempPhotoBase64 = ev.foto || null;
+
+        if (ev.foto) {
+            document.getElementById('photo-preview').src = ev.foto;
+            document.getElementById('photo-preview-container').classList.remove('hidden');
+        } else {
+            document.getElementById('photo-preview-container').classList.add('hidden');
+        }
+        document.getElementById('gps-status').innerText = (ev.lat && ev.lng) ? `Coordenadas previas guardadas` : '';
     } else {
         document.getElementById('modal-title').innerText = "Nuevo Evento de Taller";
         document.getElementById('event-form').reset();
         document.getElementById('event-id').value = '';
+        document.getElementById('event-lat').value = '';
+        document.getElementById('event-lng').value = '';
+        document.getElementById('photo-preview-container').classList.add('hidden');
+        document.getElementById('gps-status').innerText = '';
+        tempPhotoBase64 = null;
     }
 }
 
@@ -642,6 +734,9 @@ function closeModal() {
 function saveEvent(e) {
     e.preventDefault();
     const id = document.getElementById('event-id').value;
+    const lat = document.getElementById('event-lat').value;
+    const lng = document.getElementById('event-lng').value;
+
     const data = {
         id: id ? id : Date.now().toString(),
         taller: document.getElementById('event-taller').value,
@@ -649,6 +744,9 @@ function saveEvent(e) {
         fecha: document.getElementById('event-fecha').value,
         hora: document.getElementById('event-hora').value,
         titulo: document.getElementById('event-titulo').value,
+        lat: lat || null,
+        lng: lng || null,
+        foto: tempPhotoBase64 || null,
         createdBy: currentUser ? currentUser.username : 'sgarcia'
     };
 
@@ -656,9 +754,15 @@ function saveEvent(e) {
         events = events.map(ev => ev.id === id ? data : ev);
     } else {
         events.push(data);
+        if (data.etapa === 'cierre' || data.foto) {
+            if (confirm("¿Deseas enviar la notificación automática con la ubicación y foto a la Jefatura por Outlook?")) {
+                notificarJefaturaOutlook(data);
+            }
+        }
     }
 
     localStorage.setItem('talleres_events', JSON.stringify(events));
+    tempPhotoBase64 = null;
     closeModal();
     renderMatrix();
     renderCalendarGrid();
