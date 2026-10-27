@@ -64,6 +64,7 @@ function handleLogin(e) {
         currentUser = found;
         localStorage.setItem('talleres_current_user', JSON.stringify(currentUser));
         errorElement.classList.add('hidden');
+        resetAiChat(); // Limpiar chat al iniciar sesión con otro usuario
         showAppView();
     } else {
         errorElement.classList.remove('hidden');
@@ -73,7 +74,20 @@ function handleLogin(e) {
 function handleLogout() {
     currentUser = null;
     localStorage.removeItem('talleres_current_user');
+    resetAiChat(); // Limpiar chat al cerrar sesión
     showLoginView();
+}
+
+// Función para reiniciar el historial de la IA al cambiar de usuario
+function resetAiChat() {
+    const chatMessages = document.getElementById('ai-chat-messages');
+    if (chatMessages) {
+        chatMessages.innerHTML = `
+            <div class="bg-emerald-50 text-emerald-900 p-2.5 rounded-xl border border-emerald-100">
+                ¡Hola! Soy tu asistente de IA. Pregúntame sobre los talleres agendados, estadísticas o pide sugerencias de optimización.
+            </div>
+        `;
+    }
 }
 
 function showLoginView() {
@@ -471,23 +485,19 @@ function sendAiMessage() {
 
     const chatMessages = document.getElementById('ai-chat-messages');
     
-    // Mensaje del usuario
     chatMessages.innerHTML += `<div class="bg-slate-200 text-slate-800 p-2.5 rounded-xl ml-6">${msg}</div>`;
     input.value = '';
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Normalizador de texto sin tildes
     const cleanText = text => text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
     const query = cleanText(msg);
 
     setTimeout(() => {
         let respuesta = "";
 
-        // Palabras ignoradas para extraer el término de búsqueda real (ej: "Hogar de Rivera")
         const stopWords = ["hice", "talleres", "taller", "con", "el", "la", "los", "las", "un", "una", "de", "en", "para", "por", "que", "hay", "tenemos", "agendados", "agendado", "ver", "busco", "buscar", "cuantos", "cuantas"];
         const words = query.split(/\s+/).filter(w => !stopWords.includes(w) && w.length > 2);
 
-        // Búsqueda en los eventos guardados
         const matches = events.filter(ev => {
             const fullEvText = cleanText(`${ev.titulo} ${ev.taller} ${ev.createdBy} ${ev.fecha} ${etapasNombresMap[ev.etapa]}`);
             return words.some(word => fullEvText.includes(word));
