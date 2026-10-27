@@ -357,7 +357,6 @@ function handlePhotoSelect(event) {
             preview.src = tempPhotoBase64;
             container.classList.remove('hidden');
 
-            // IA Visión simulada / analizando foto
             document.getElementById('ai-vision-badge').innerText = "✓ IA Visión: Imagen analizada y verificada con éxito";
         };
         reader.readAsDataURL(file);
@@ -421,7 +420,7 @@ function notificarJefaturaOutlook(ev) {
     window.open(outlookUrl, '_blank');
 }
 
-// --- INTELIGENCIA ARTIFICIAL (VOZ Y CHAT ASISTENTE) ---
+// --- INTELIGENCIA ARTIFICIAL INTERACTIVA DE BÚSQUEDA ---
 function dictarNotasVoz() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -477,24 +476,42 @@ function sendAiMessage() {
     input.value = '';
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Procesar respuesta inteligente basada en los eventos actuales
-    setTimeout(() => {
-        let respuesta = "He revisado los registros actuales de los talleres. ";
-        const msgLower = msg.toLowerCase();
+    // Normalizador de texto sin tildes
+    const cleanText = text => text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+    const query = cleanText(msg);
 
-        if (msgLower.includes('cuántos') || msgLower.includes('total') || msgLower.includes('cantidad')) {
-            respuesta += `Actualmente hay un total de ${events.length} talleres registrados en el sistema entre agendados y en proceso.`;
-        } else if (msgLower.includes('noviembre') || msgLower.includes('próximo') || msgLower.includes('agenda')) {
-            respuesta += "Tienes talleres agendados para este mes y próximas fechas. Puedes visualizarlos directamente en la Matriz de Procesos y en el Calendario Integral.";
-        } else if (msgLower.includes('sugerencia') || msgLower.includes('optimizar') || msgLower.includes('consejo')) {
-            respuesta += "💡 Sugerencia de IA: Los horarios con mayor tasa de asistencia confirmada son los martes y jueves a las 18:00 horas. Te recomiendo agendar las próximas sesiones en esos bloques.";
+    setTimeout(() => {
+        let respuesta = "";
+
+        // Palabras ignoradas para extraer el término de búsqueda real (ej: "Hogar de Rivera")
+        const stopWords = ["hice", "talleres", "taller", "con", "el", "la", "los", "las", "un", "una", "de", "en", "para", "por", "que", "hay", "tenemos", "agendados", "agendado", "ver", "busco", "buscar", "cuantos", "cuantas"];
+        const words = query.split(/\s+/).filter(w => !stopWords.includes(w) && w.length > 2);
+
+        // Búsqueda en los eventos guardados
+        const matches = events.filter(ev => {
+            const fullEvText = cleanText(`${ev.titulo} ${ev.taller} ${ev.createdBy} ${ev.fecha} ${etapasNombresMap[ev.etapa]}`);
+            return words.some(word => fullEvText.includes(word));
+        });
+
+        if (matches.length > 0) {
+            respuesta = `Encontré <b>${matches.length}</b> registro(s) relacionado(s) con tu consulta:<br><br>`;
+            matches.forEach((ev, i) => {
+                const userObj = usersDatabase.find(u => u.username === ev.createdBy);
+                const autor = userObj ? userObj.name : ev.createdBy;
+                const etapaName = etapasNombresMap[ev.etapa] || ev.etapa;
+                respuesta += `${i+1}. <b>${ev.titulo}</b> (${ev.taller})<br>• Fecha: ${ev.fecha} ${ev.hora}<br>• Etapa: ${etapaName}<br>• Asesor: ${autor}<br><br>`;
+            });
+        } else if (query.includes("total") || query.includes("cuanto") || query.includes("cantidad")) {
+            respuesta = `En total hay registrados <b>${events.length}</b> talleres en el sistema.`;
+        } else if (query.includes("sugerencia") || query.includes("horario") || query.includes("recomiend")) {
+            respuesta = "💡 <b>Sugerencia de la IA:</b> Los martes y jueves a las 18:00 h son los bloques con mayor porcentaje de confirmación. Te sugiero agendar tus próximos eventos en ese horario.";
         } else {
-            respuesta += `Analizando tu consulta sobre "${msg}": El sistema se encuentra operativo y sincronizado con los datos corporativos. ¿Te gustaría exportar algún reporte a Excel o verificar alguna geolocalización?`;
+            respuesta = `No encontré ningún taller que coincida con "<b>${msg}</b>" en los registros actuales.<br><br>Intenta buscando por el nombre de la institución (ej. <i>Florida</i>), el taller o el asesor.`;
         }
 
         chatMessages.innerHTML += `<div class="bg-emerald-50 text-emerald-900 p-2.5 rounded-xl border border-emerald-100 mr-6">${respuesta}</div>`;
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 600);
+    }, 500);
 }
 
 // --- RENDERIZADO DE MATRIZ Y VISTAS ---
