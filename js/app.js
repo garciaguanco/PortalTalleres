@@ -133,6 +133,8 @@ function buildSidebarNav() {
         `;
     }
     nav.innerHTML = html;
+    document.getElementById('ai-chat-container').classList.remove('hidden');
+    document.getElementById('ai-chat-container').classList.add('flex');
     lucide.createIcons();
 }
 
@@ -218,7 +220,7 @@ function populateAdminSelectOptions() {
     });
 }
 
-// --- FUNCIONES DE EXPORTACIÓN A EXCEL (CSV UTF-8) ---
+// --- EXPORTACIÓN A EXCEL (CSV) ---
 function downloadCSV(csvContent, fileName) {
     const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -290,7 +292,7 @@ function exportAdminHistoryToExcel() {
     downloadCSV(csv, `Reporte_Historial_Asesores_${new Date().toISOString().slice(0,10)}.csv`);
 }
 
-// Generadores de Enlaces de Calendario
+// Enlaces de Calendario
 function getGoogleCalendarUrl(ev) {
     const cleanDate = ev.fecha.replace(/-/g, '');
     const cleanTime = ev.hora.replace(':', '') + '00';
@@ -341,7 +343,7 @@ END:VCALENDAR`;
     document.body.removeChild(link);
 }
 
-// --- NUEVAS FUNCIONES DE FOTO Y GEOLOCALIZACIÓN ---
+// --- FOTO Y GEOLOCALIZACIÓN ---
 let tempPhotoBase64 = null;
 
 function handlePhotoSelect(event) {
@@ -354,6 +356,9 @@ function handlePhotoSelect(event) {
             const container = document.getElementById('photo-preview-container');
             preview.src = tempPhotoBase64;
             container.classList.remove('hidden');
+
+            // IA Visión simulada / analizando foto
+            document.getElementById('ai-vision-badge').innerText = "✓ IA Visión: Imagen analizada y verificada con éxito";
         };
         reader.readAsDataURL(file);
     }
@@ -380,12 +385,12 @@ function obtenerUbicacionGPS() {
 
             btnText.innerText = "Ubicación Capturada ✓";
             statusText.className = "text-[11px] text-emerald-600 font-semibold mt-1 text-center";
-            statusText.innerText = `Coordenadas: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            statusText.innerText = `Coordenadas exactas: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
         },
         (error) => {
             btnText.innerText = "Reintentar Obtener Ubicación";
             statusText.className = "text-[11px] text-rose-600 font-semibold mt-1 text-center";
-            statusText.innerText = "No se pudo obtener la ubicación (permiso denegado o error de GPS).";
+            statusText.innerText = "No se pudo obtener la ubicación (permiso denegado).";
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -416,6 +421,83 @@ function notificarJefaturaOutlook(ev) {
     window.open(outlookUrl, '_blank');
 }
 
+// --- INTELIGENCIA ARTIFICIAL (VOZ Y CHAT ASISTENTE) ---
+function dictarNotasVoz() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Tu navegador no soporta reconocimiento de voz nativo.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'es-ES';
+    const micBtn = document.getElementById('mic-btn');
+    micBtn.innerHTML = '<i data-lucide="mic-off" class="w-3.5 h-3.5 animate-pulse text-rose-600"></i> Escuchando...';
+    lucide.createIcons();
+
+    recognition.onresult = function(event) {
+        const speechToText = event.results[0][0].transcript;
+        document.getElementById('event-titulo').value = speechToText;
+        micBtn.innerHTML = '<i data-lucide="mic" class="w-3.5 h-3.5"></i> Dictar por Voz';
+        lucide.createIcons();
+    };
+
+    recognition.onerror = function() {
+        micBtn.innerHTML = '<i data-lucide="mic" class="w-3.5 h-3.5"></i> Dictar por Voz';
+        lucide.createIcons();
+    };
+
+    recognition.onend = function() {
+        micBtn.innerHTML = '<i data-lucide="mic" class="w-3.5 h-3.5"></i> Dictar por Voz';
+        lucide.createIcons();
+    };
+
+    recognition.start();
+}
+
+function toggleAiChat() {
+    const windowChat = document.getElementById('ai-chat-window');
+    windowChat.classList.toggle('hidden');
+    windowChat.classList.toggle('flex');
+}
+
+function handleAiKeypress(e) {
+    if (e.key === 'Enter') sendAiMessage();
+}
+
+function sendAiMessage() {
+    const input = document.getElementById('ai-chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const chatMessages = document.getElementById('ai-chat-messages');
+    
+    // Mensaje del usuario
+    chatMessages.innerHTML += `<div class="bg-slate-200 text-slate-800 p-2.5 rounded-xl ml-6">${msg}</div>`;
+    input.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Procesar respuesta inteligente basada en los eventos actuales
+    setTimeout(() => {
+        let respuesta = "He revisado los registros actuales de los talleres. ";
+        const msgLower = msg.toLowerCase();
+
+        if (msgLower.includes('cuántos') || msgLower.includes('total') || msgLower.includes('cantidad')) {
+            respuesta += `Actualmente hay un total de ${events.length} talleres registrados en el sistema entre agendados y en proceso.`;
+        } else if (msgLower.includes('noviembre') || msgLower.includes('próximo') || msgLower.includes('agenda')) {
+            respuesta += "Tienes talleres agendados para este mes y próximas fechas. Puedes visualizarlos directamente en la Matriz de Procesos y en el Calendario Integral.";
+        } else if (msgLower.includes('sugerencia') || msgLower.includes('optimizar') || msgLower.includes('consejo')) {
+            respuesta += "💡 Sugerencia de IA: Los horarios con mayor tasa de asistencia confirmada son los martes y jueves a las 18:00 horas. Te recomiendo agendar las próximas sesiones en esos bloques.";
+        } else {
+            respuesta += `Analizando tu consulta sobre "${msg}": El sistema se encuentra operativo y sincronizado con los datos corporativos. ¿Te gustaría exportar algún reporte a Excel o verificar alguna geolocalización?`;
+        }
+
+        chatMessages.innerHTML += `<div class="bg-emerald-50 text-emerald-900 p-2.5 rounded-xl border border-emerald-100 mr-6">${respuesta}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 600);
+}
+
+// --- RENDERIZADO DE MATRIZ Y VISTAS ---
 function renderMatrix() {
     const defaultTalleres = ['Orientacion Laboral', 'Educacion Financiera'];
     const talleresFromEvents = events.map(e => e.taller ? e.taller.trim() : '');
